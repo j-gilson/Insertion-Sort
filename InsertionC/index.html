@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion Sort - Passo a Passo</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { margin-top: 20px; }
+        .array { font-size: 20px; margin: 10px; }
+        .highlight { color: red; font-weight: bold; }
+        .compare { color: blue; font-weight: bold; }
+        .explanation { margin-top: 20px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h2>Insertion Sort - Passo a Passo</h2>
+    <div class="container">
+        <p>Insira 9 números separados por vírgula:</p>
+        <input type="text" id="userInput" placeholder="Ex: 5,2,9,1,5,6,3,8,7">
+        <button onclick="getUserArray()">Confirmar</button>
+        <p id="arrayDisplay" class="array"></p>
+        <button onclick="startSorting()">Iniciar Ordenação</button>
+        <button id="pauseResumeButton" onclick="pauseResumeSorting()">Pausar</button>
+        <p id="explanation" class="explanation"></p>
+    </div>
+
+    <script>
+        let array = [];
+        let i = 1, j = 0;
+        let current;
+        let isPaused = false;
+
+        function getUserArray() {
+            let input = document.getElementById("userInput").value;
+            let numbers = input.split(",").map(num => parseInt(num.trim()));
+            if (numbers.length !== 9 || numbers.some(isNaN)) {
+                alert("Por favor, insira exatamente 9 números válidos separados por vírgula.");
+                return;
+            }
+            array = numbers;
+            displayArray();
+            document.getElementById("explanation").innerText = "Array inicial: " + array.join(", ");
+        }
+
+        function displayArray(highlightIndex = -1, compareIndex = -1) {
+            let display = array.map((num, index) => {
+                if (index === highlightIndex) return `<span class="highlight">${num}</span>`;
+                if (index === compareIndex) return `<span class="compare">${num}</span>`;
+                return num;
+            }).join(" - ");
+            document.getElementById("arrayDisplay").innerHTML = display;
+        }
+
+        function insertionSortStep() {
+            if (isPaused) return;
+            if (j >= 0 && array[j] > current) {
+                displayArray(j + 1, j);
+                document.getElementById("explanation").innerText = `Comparando ${current} com ${array[j]}. Movendo ${array[j]} para a direita.`;
+                setTimeout(() => {
+                    array[j + 1] = array[j];
+                    j--;
+                    displayArray(j + 1, j);
+                    setTimeout(insertionSortStep, 2000);
+                }, 2000); // Tempo maior entre cada troca
+            } else {
+                array[j + 1] = current;
+                displayArray(i);
+                document.getElementById("explanation").innerText = `Inserindo ${current} na posição correta.`;
+                i++;
+                if (i < array.length) {
+                    j = i - 1;
+                    current = array[i];
+                    setTimeout(insertionSortStep, 2000);
+                } else {
+                    document.getElementById("explanation").innerText = "Ordenação concluída!";
+                }
+            }
+        }
+
+        function startSorting() {
+            if (array.length !== 9) {
+                alert("Por favor, insira 9 números antes de iniciar a ordenação.");
+                return;
+            }
+            i = 1;
+            j = i - 1;
+            current = array[i];
+            document.getElementById("explanation").innerText = "Iniciando a ordenação...";
+            isPaused = false;
+            setTimeout(insertionSortStep, 1000);
+        }
+
+        function pauseResumeSorting() {
+            if (isPaused) {
+                isPaused = false;
+                document.getElementById("pauseResumeButton").innerText = "Pausar";
+                document.getElementById("explanation").innerText ;
+                setTimeout(insertionSortStep, 1000);
+            } else {
+                isPaused = true;
+                document.getElementById("pauseResumeButton").innerText = "Retomar";
+            }
+        }
+    </script>
+</body>
+</html>
